@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmBuddy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            padding: 1rem;
+            color: white;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #d4f7d4;
+        }
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: white;
+        }
+        #features, #about, #contact {
+            padding: 2rem;
+            background-color: white;
+            margin: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .feature-item {
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+        .feature-content {
+            display: none;
+            margin-top: 1rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        input, textarea {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        .dashboard {
+            background-color: #e0f7e9;
+            padding: 1rem;
+            margin: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard h2 {
+            color: #4CAF50;
+        }
+        .dashboard p {
+            font-size: 1.1rem;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">FarmBuddy</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <h1>Welcome to FarmBuddy</h1>
+        <p>Your Smart Farming Assistant</p>
+    </section>
+
+    <section id="features">
+        <h2>Features</h2>
+        <div class="feature-item" onclick="toggleFeature('soilMonitoring')">
+            <h3>Soil Monitoring</h3>
+            <div id="soilMonitoring" class="feature-content">
+                <p>Real-time soil moisture and humidity tracking:</p>
+                <p>Soil Moisture: <span id="soilMoisture">Loading...</span></p>
+                <p>Soil Humidity: <span id="soilHumidity">Loading...</span></p>
+                <p>Rain Drop Level: <span id="rainDrop">Loading...</span></p>
+                <p>Temperature: <span id="temperature">Loading...</span></p>
+                <p id="errorSoil" class="error-message"></p>
+            </div>
+        </div>
+        <div class="feature-item" onclick="toggleFeature('cropRecommendations')">
+            <h3>Crop Recommendations</h3>
+            <div id="cropRecommendations" class="feature-content">
+                <p>AI-powered suggestions for the best crops to grow based on current conditions.</p>
+            </div>
+        </div>
+        <div class="feature-item" onclick="toggleFeature('wateringAlerts')">
+            <h3>Watering Alerts</h3>
+            <div id="wateringAlerts" class="feature-content">
+                <p>Notifications to water your plants based on soil data.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard">
+        <h2>FarmBuddy Dashboard</h2>
+        <p>Soil Moisture Level: <span id="dashboardSoilMoisture">Loading...</span></p>
+        <p>Soil Humidity Level: <span id="dashboardSoilHumidity">Loading...</span></p>
+        <p>Rain Drop Level: <span id="dashboardRainDrop">Loading...</span></p>
+        <p>Temperature Level: <span id="dashboardTemperature">Loading...</span></p>
+        <p id="errorDashboard" class="error-message"></p>
+    </section>
+
+    <section id="about">
+        <h2>About FarmBuddy</h2>
+        <p>FarmBuddy integrates IoT and AI to help farmers make data-driven decisions for better crop yield and efficient resource management.</p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 FarmBuddy. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase Initialization -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxv3SQYSeOKpWr4zptTWpaI89a4QRdq_s",
+            authDomain: "soilmoisture-3abe7.firebaseapp.com",
+            databaseURL: "https://soilmoisture-3abe7-default-rtdb.firebaseio.com",
+            projectId: "soilmoisture-3abe7",
+            storageBucket: "soilmoisture-3abe7.firebasestorage.app",
+            messagingSenderId: "413335580678",
+            appId: "1:413335580678:web:41e4b495717d2ea8d31387",
+            measurementId: "G-W47J2XV3WR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const soilRef = ref(database, 'SmartIrrigation');
+
+
+
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+    onValue(soilRef, (snapshot) => {
+        const data = snapshot.val();
+        console.log("Fetched Data:", data);
+
+        if (data && data.SmartIrrigation) {
+            let latestData = null;
+
+            // Iterate through the entries to find the most recent data (e.g., based on the timestamp)
+            for (const key in data.SmartIrrigation) {
+                const entry = data.SmartIrrigation[key];
+                console.log(`Checking entry ${key}:`, entry);
+
+                // Ensure that all necessary fields are present for the entry
+                if (entry.SoilMoisture && entry.RainDrop) {
+                    // If Humidity and Temperature exist, add them; otherwise, use default values
+                    latestData = {
+                        SoilMoisture: entry.SoilMoisture,
+                        RainDrop: entry.RainDrop,
+                        Humidity: entry.Humidity || "No Data",
+                        Temperature: entry.Temperature || "No Data"
+                    };
+                    console.log("Found valid entry:", latestData);
+                    break;  // Exit loop after finding a valid entry
+                } else {
+                    console.log(`Incomplete entry found for key ${key}. Missing fields:`, entry);
+                }
+            }
+
+            // If valid data is found, update the UI
+            if (latestData) {
+                const soilMoisture = latestData.SoilMoisture;
+                const rainDrop = latestData.RainDrop;
+                const humidity = latestData.Humidity;
+                const temperature = latestData.Temperature;
+
+                console.log("Updated Data:", soilMoisture, humidity, rainDrop, temperature);
+
+                // Update DOM elements with the latest values
+                document.getElementById('soilMoisture').textContent = soilMoisture + " %";
+                document.getElementById('rainDrop').textContent = rainDrop + " mm";
+                document.getElementById('soilHumidity').textContent = humidity + " %";
+                document.getElementById('temperature').textContent = temperature + " °C";
+
+                // Dashboard
+                document.getElementById('dashboardSoilMoisture').textContent = soilMoisture + " %";
+                document.getElementById('dashboardRainDrop').textContent = rainDrop + " mm";
+                document.getElementById('dashboardSoilHumidity').textContent = humidity + " %";
+                document.getElementById('dashboardTemperature').textContent = temperature + " °C";
+
+                // Clear error messages if data is successfully loaded
+                document.getElementById('errorSoil').textContent = '';
+                document.getElementById('errorDashboard').textContent = '';
+            } else {
+                console.log("No valid data entry found.");
+                document.getElementById('errorSoil').textContent = 'No complete data available';
+                document.getElementById('errorDashboard').textContent = 'No complete data available';
+            }
+        } else {
+            console.log("Failed to load data or SmartIrrigation is missing.");
+            document.getElementById('errorSoil').textContent = 'Failed to load data.';
+            document.getElementById('errorDashboard').textContent = 'Failed to load dashboard data.';
+        }
+    }, (error) => {
+        console.error("Error fetching data:", error);
+        document.getElementById('errorSoil').textContent = 'Failed to load soil data.';
+        document.getElementById('errorDashboard').textContent = 'Failed to load dashboard data.';
+    });
+});
+
+
+
+
+
+
+        function toggleFeature(featureId) {
+            const feature = document.getElementById(featureId);
+            feature.style.display = feature.style.display === 'block' ? 'none' : 'block';
+        }
+
+        window.toggleFeature = toggleFeature;
+    </script>
+</body>
+</html>
